@@ -33,9 +33,9 @@ const table = (list) => {
 };
 
 const batteryTable = (list) => {
-  const head = '| 版本 | 动力形式 | 电池品牌 / 类型 | 增程器 | 馈电油耗 | 油箱 | 辅助驾驶 | 悬架 |';
-  const sep = '|---|---|---|---|---|---|---|---|';
-  const rows = list.map((c) => `| ${c.name} | ${c.powertrain} | ${v(c.specs.batteryType)} | ${v(c.specs.engine)} | ${v(c.metrics.fuelConsumptionL100, ' L/100km')} | ${v(c.metrics.fuelTankL, ' L')} | ${v(c.specs.adas)} | ${v(c.specs.suspension)} |`);
+  const head = '| 版本 | 动力形式 | 电池品牌 / 类型 | 增程器 | 馈电油耗 | 油箱 | 辅助驾驶 | 悬架 | 制动 | 空气动力学 / 外观套件 | 驱动控制 |';
+  const sep = '|---|---|---|---|---|---|---|---|---|---|---|';
+  const rows = list.map((c) => `| ${c.name} | ${c.powertrain} | ${v(c.specs.batteryType)} | ${v(c.specs.engine)} | ${v(c.metrics.fuelConsumptionL100, ' L/100km')} | ${v(c.metrics.fuelTankL, ' L')} | ${v(c.specs.adas)} | ${v(c.specs.suspension)} | ${v(c.specs.brakes)} | ${v(c.specs.aerodynamics)} | ${v(c.specs.differential)} |`);
   return [head, sep, ...rows].join('\n');
 };
 
@@ -80,12 +80,19 @@ ${batteryTable(list)}
 
 ## 四、赛道记录
 
-${list.some((c) => c.records?.length)
-  ? list
-      .filter((c) => c.records?.length)
-      .map((c) => c.records.map((r) => `- **${r.lapTime}** · ${r.track} · ${r.vehicle} · ${r.date}${r.title ? ` · ${r.title}` : ''}${r.note ? `（${r.note}）` : ''}`).join('\n'))
-      .join('\n')
-  : '- 无'}
+${(() => {
+  const seen = new Set();
+  const rows = [];
+  for (const c of list) {
+    for (const r of c.records ?? []) {
+      const key = `${r.track}|${r.lapTime}|${r.date}|${r.vehicle}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      rows.push(`- **${r.lapTime}** · ${r.track} · ${r.vehicle} · ${r.date}${r.title ? ` · ${r.title}` : ''}${r.note ? `（${r.note}）` : ''}`);
+    }
+  }
+  return rows.length ? rows.join('\n') : '- 无';
+})()}
 
 ## 五、来源清单
 

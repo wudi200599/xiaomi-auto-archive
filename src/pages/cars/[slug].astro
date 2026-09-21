@@ -58,6 +58,7 @@ const groups = [
       ['轴距', fmt(car.metrics.wheelbaseMm, ' mm')],
       ['整备质量', fmt(car.metrics.curbWeightKg, ' kg')],
       ['座位数', fmt(car.metrics.seats, ' 座')],
+      ...(car.specs.aerodynamics ? [['空气动力学 / 外观套件', car.specs.aerodynamics]] : []),
     ],
   },
   {
@@ -77,6 +78,7 @@ const groups = [
     rows: [
       ['辅助驾驶硬件', car.specs.adas || '—'],
       ['平台 / 底盘', car.specs.platform || '—'],
+      ...(car.specs.differential ? [['驱动控制', car.specs.differential]] : []),
       ['悬架', car.specs.suspension || '—'],
       ['制动', car.specs.brakes || '—'],
     ],

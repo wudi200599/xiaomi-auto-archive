@@ -113,6 +113,10 @@ export type CarSpecs = {
   suspension: string;
   /** 制动（未知留空串） */
   brakes: string;
+  /** 空气动力学与外观套件（仅在有可靠资料时填写） */
+  aerodynamics?: string;
+  /** 差速器、扭矩分配等驱动控制配置（仅在有可靠资料时填写） */
+  differential?: string;
 };
 
 /** 占位示意图配置（阶段二使用，后续接入真实图片后仍作为兜底） */

@@ -1,5 +1,5 @@
 /**
- * build-car-images.mjs — 下载选定官图 → 统一处理 → 输出到 public/images/cars/
+ * build-car-images.mjs — 收集选定图片 → 统一处理 → 输出到 public/images/cars/
  *
  * 处理规格：裁切为 16:10（1600×1000）→ WebP（quality 82）
  * 选图策略：优先影棚/官方渲染图；同一车系的不同版本用不同颜色区分
@@ -8,10 +8,22 @@ import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
 
+const LOCAL_PICKS = {
+  'su7-2024-standard': {
+    file: 'data-raw/user-images/old-su7/standard.jpg',
+    note: '用户提供：初代 SU7 绿色影棚（标准版，兼作车系封面）',
+  },
+  'su7-2024-pro': {
+    file: 'data-raw/user-images/old-su7/pro.jpg',
+    note: '用户提供：初代 SU7 蓝色影棚（Pro）',
+  },
+  'su7-2024-max': {
+    file: 'data-raw/user-images/old-su7/max.jpg',
+    note: '用户提供：初代 SU7 青色影棚（Max）',
+  },
+};
+
 const PICKS = {
-  'su7-2024-standard': ['su7-2024-max', 3, '银色影棚（同代 Max 棚拍）'],
-  'su7-2024-pro': ['su7-2024-max', 11, '橙色影棚'],
-  'su7-2024-max': ['su7-2024-max', 15, '紫色影棚'],
   'su7-2026-standard': ['su7-2026-max', 1, '蓝色影棚'],
   'su7-2026-pro': ['su7-2026-max', 15, '银色影棚'],
   'su7-2026-max': ['su7-2026-max', 9, '红色影棚'],
@@ -26,7 +38,7 @@ const PICKS = {
   'n70-2026-max': ['n70-2026-max', 3, '蓝色影棚（3/4 视角）'],
 };
 
-// 这两张采用小米官网直接发布的渲染图，不使用汽车之家图库。
+// 其余远程图片采用小米官网直接发布的渲染图或汽车之家图库。
 const OFFICIAL_PICKS = {
   'yu7-2026-standard': {
     url: 'https://s1.xiaomiev.com/activity-outer-assets/0328/images/yu7_20260521/base_pc/9.11.jpg',
@@ -48,39 +60,47 @@ const OUT = 'public/images/cars';
 fs.mkdirSync(OUT, { recursive: true });
 
 const manifest = [];
-for (const slug of [...Object.keys(PICKS), ...Object.keys(OFFICIAL_PICKS)]) {
+for (const slug of [...Object.keys(LOCAL_PICKS), ...Object.keys(PICKS), ...Object.keys(OFFICIAL_PICKS)]) {
   let source;
   let idx = null;
   let note;
   let url;
   let referer = 'https://www.xiaomiev.com/';
   let zoom = 1;
+  let buf;
 
-  if (OFFICIAL_PICKS[slug]) {
-    ({ url, note, zoom = 1 } = OFFICIAL_PICKS[slug]);
-    source = 'official-xiaomiev';
+  if (LOCAL_PICKS[slug]) {
+    const pick = LOCAL_PICKS[slug];
+    source = 'user-provided';
+    note = pick.note;
+    buf = fs.readFileSync(pick.file);
   } else {
-    const [srcFile, pickIndex, pickNote] = PICKS[slug];
-    source = srcFile;
-    idx = pickIndex;
-    note = pickNote;
-    const data = JSON.parse(fs.readFileSync(`data-raw/official-images/${srcFile}.json`, 'utf8'));
-    url = data.images[idx - 1];
-    referer = data.pageUrl;
-    if (!url) {
-      console.error(`${slug}: 源图不存在 (${srcFile} #${idx})`);
+    if (OFFICIAL_PICKS[slug]) {
+      ({ url, note, zoom = 1 } = OFFICIAL_PICKS[slug]);
+      source = 'official-xiaomiev';
+    } else {
+      const [srcFile, pickIndex, pickNote] = PICKS[slug];
+      source = srcFile;
+      idx = pickIndex;
+      note = pickNote;
+      const data = JSON.parse(fs.readFileSync(`data-raw/official-images/${srcFile}.json`, 'utf8'));
+      url = data.images[idx - 1];
+      referer = data.pageUrl;
+      if (!url) {
+        console.error(`${slug}: 源图不存在 (${srcFile} #${idx})`);
+        continue;
+      }
+    }
+
+    const res = await fetch(url, {
+      headers: { 'User-Agent': 'Mozilla/5.0', Referer: referer },
+    });
+    if (!res.ok) {
+      console.error(`${slug}: 下载失败 ${res.status}`);
       continue;
     }
+    buf = Buffer.from(await res.arrayBuffer());
   }
-
-  const res = await fetch(url, {
-    headers: { 'User-Agent': 'Mozilla/5.0', Referer: referer },
-  });
-  if (!res.ok) {
-    console.error(`${slug}: 下载失败 ${res.status}`);
-    continue;
-  }
-  const buf = Buffer.from(await res.arrayBuffer());
   const outFile = path.join(OUT, `${slug}.webp`);
   let image = sharp(buf);
   if (zoom > 1) {

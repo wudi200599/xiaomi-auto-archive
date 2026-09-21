@@ -1,33 +1,33 @@
 [
   {
     "slug": "su7-2024-standard",
-    "source": "su7-2024-max",
-    "index": 3,
-    "note": "银色影棚（同代 Max 棚拍）",
-    "url": "https://car3.autoimg.cn/cardfs/product/g32/M02/14/94/0x0_0_q95_c42_autohomecar__ChxkPmd3lMeAEZETAAwPNn1du28138.jpg",
+    "source": "user-provided",
+    "index": null,
+    "note": "用户提供：初代 SU7 绿色影棚（标准版，兼作车系封面）",
+    "url": null,
     "width": 1600,
     "height": 1000,
-    "kb": 36
+    "kb": 55
   },
   {
     "slug": "su7-2024-pro",
-    "source": "su7-2024-max",
-    "index": 11,
-    "note": "橙色影棚",
-    "url": "https://car2.autoimg.cn/cardfs/product/g32/M0B/14/8A/0x0_0_q95_c42_autohomecar__ChxkPWd3lL6AdpMKAA0HNMAp_W8755.jpg",
-    "width": 1600,
-    "height": 1000,
-    "kb": 44
-  },
-  {
-    "slug": "su7-2024-max",
-    "source": "su7-2024-max",
-    "index": 15,
-    "note": "紫色影棚",
-    "url": "https://car2.autoimg.cn/cardfs/product/g32/M02/14/8A/0x0_0_q95_c42_autohomecar__ChxkPWd3lLmATMXZAAxU2uBIpGA898.jpg",
+    "source": "user-provided",
+    "index": null,
+    "note": "用户提供：初代 SU7 蓝色影棚（Pro）",
+    "url": null,
     "width": 1600,
     "height": 1000,
     "kb": 37
+  },
+  {
+    "slug": "su7-2024-max",
+    "source": "user-provided",
+    "index": null,
+    "note": "用户提供：初代 SU7 青色影棚（Max）",
+    "url": null,
+    "width": 1600,
+    "height": 1000,
+    "kb": 45
   },
   {
     "slug": "su7-2026-standard",

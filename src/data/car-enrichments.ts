@@ -30,6 +30,27 @@ const SRC_YU7: SourceRef = {
   confidence: 'A',
 };
 
+const SRC_NURBURGRING_SU7_PROD: SourceRef = {
+  name: 'Nürburgring · SU7 Ultra 7:04.957 官方记录',
+  url: 'https://www.nuerburgring.de/news/rekordrunde-auf-der-nordschleife-xiaomi-su7-ultra-ist-mit-7-04-957-minuten-schnellstes-e-fahrzeug-der-oberklasse',
+  asOf: '2026-09-22',
+  confidence: 'A',
+};
+
+const SRC_NURBURGRING_SU7_PROTO: SourceRef = {
+  name: 'Nürburgring · SU7 Ultra 原型车 6:22.091 官方记录',
+  url: 'https://www.nuerburgring.de/news/xiaomi-su7-ultra-prototype-absolviert-eine-rundenzeit-von-6-22-091-minuten-auf-der-nordschleife',
+  asOf: '2026-09-22',
+  confidence: 'A',
+};
+
+const SRC_NURBURGRING_YU7_GT: SourceRef = {
+  name: 'Nürburgring · YU7 GT 7:22.755 官方记录',
+  url: 'https://www.nuerburgring.de/news/xiaomi-yu7-gt-mit-track-package-die-nordschleife-in-7-22-755-minuten',
+  asOf: '2026-09-22',
+  confidence: 'A',
+};
+
 const SRC_N70: SourceRef = {
   name: '小米汽车官网 · 澎程 N70',
   url: 'https://www.xiaomiev.com/skynomad/n70',
@@ -140,11 +161,11 @@ export const CAR_INTERIORS: Record<string, CarInterior> = {
   },
   'su7-ultra-2025-nurburgring': {
     seatLayout: '2 座赛道化布局',
-    frontSeats: 'SPARCO 碳纤维赛车桶椅 + 六点式安全带，无电动调节、通风与按摩。',
-    rearSeats: '后排座椅拆除，换装半幅防滚架以减重。',
+    frontSeats: 'SPARCO® QRT PERFORMANCE CARBON 碳纤维赛车桶椅；六点式竞赛安全带为非出厂预装赛道件，座椅无电动调节、加热、通风与按摩。',
+    rearSeats: '后排座椅拆除，换装半幅钢制防滚架；较 Ultra 减重约 30kg，整车刚性提升 8%。',
     displays: '延续 SU7 Ultra 的仪表、16.1″ 中控屏与 HyperOS 交互系统。',
     audio: '延续 SU7 Ultra 25 扬声器座舱音响系统。',
-    comfort: '赛道化减重座舱，保留 Ultra 基础安全与互联配置。',
+    comfort: '赛道化减重座舱；因桶椅移除前排侧气囊与远端气囊，因防滚架移除侧气帘；空气动力学底护板和半热熔轮胎均为非出厂预装赛道件。',
     cockpit: 'Xiaomi HyperOS + 高通骁龙 8295 座舱芯片。',
   },
   'su7-2024-standard': SU7_2024_COMMON,
@@ -174,6 +195,7 @@ export const CAR_SPEC_FILLS: Record<string, Partial<CarSpecs>> = {
   },
   'su7-ultra-2025-nurburgring': {
     platform: '小米昆仑技术架构',
+    suspension: '倍适登 EVO R for Ultra 绞牙减振器套装（10 段压缩/回弹阻尼可调）',
   },
   'su7-2024-standard': {
     platform: '小米摩德纳平台',
@@ -207,7 +229,10 @@ export const CAR_SPEC_FILLS: Record<string, Partial<CarSpecs>> = {
   },
   'yu7-2026-gt': {
     platform: '小米昆仑技术架构',
-    brakes: 'Brembo 前四活塞固定卡钳 + 通风盘式制动器',
+    suspension: '闭式双腔空气弹簧 + 双阀 CDC 连续阻尼可变减振器',
+    brakes: 'Akebono 前六后四活塞固定卡钳 + 430mm 碳陶瓷制动盘',
+    aerodynamics: '超大一体式前铲；尾部主动扩散器支持两挡自适应调节，兼顾风阻与下压力；尾部宽体搭配 295mm 超宽后胎。',
+    differential: 'eLSD 电子限滑差速器，支持后桥单电机扭矩矢量控制',
   },
   'yu7-2025-long-range': {
     platform: '小米昆仑技术架构',
@@ -244,13 +269,13 @@ export const CAR_SPEC_FILLS: Record<string, Partial<CarSpecs>> = {
 };
 
 export const CAR_SOURCE_ADDITIONS: Record<string, SourceRef[]> = {
-  'su7-ultra-2025-track': [SRC_ULTRA],
-  'su7-ultra-2025-nurburgring': [SRC_ULTRA],
+  'su7-ultra-2025-track': [SRC_ULTRA, SRC_NURBURGRING_SU7_PROD, SRC_NURBURGRING_SU7_PROTO],
+  'su7-ultra-2025-nurburgring': [SRC_ULTRA, SRC_NURBURGRING_SU7_PROD, SRC_NURBURGRING_SU7_PROTO],
   'su7-2026-standard': [SRC_SU7],
   'su7-2026-pro': [SRC_SU7],
   'su7-2026-max': [SRC_SU7],
   'yu7-2026-standard': [SRC_YU7],
-  'yu7-2026-gt': [SRC_YU7],
+  'yu7-2026-gt': [SRC_YU7, SRC_NURBURGRING_YU7_GT],
   'yu7-2025-long-range': [SRC_YU7],
   'yu7-2025-pro': [SRC_YU7],
   'yu7-2025-max': [SRC_YU7],
