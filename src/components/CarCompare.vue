@@ -3,7 +3,7 @@
     <div class="compare-head card">
       <div>
         <h1 class="title">车型对比</h1>
-        <p class="muted desc">最多选择 4 款车型，按「基本信息 / 三电 / 车身 / 智能与底盘」逐项对比。</p>
+        <p class="muted desc">最多选择 4 款车型，按「基本信息 / 三电 / 车身 / 内饰与座舱 / 智能与底盘」逐项对比。</p>
       </div>
       <div class="head-actions">
         <span class="mono count">{{ selected.length }}/4</span>
@@ -142,6 +142,18 @@ const groups = [
       { label: '轴距', get: (c) => fmt(c.metrics.wheelbaseMm, ' mm'), diff: false },
       { label: '整备质量', get: (c) => fmt(c.metrics.curbWeightKg, ' kg') },
       { label: '座位数', get: (c) => fmt(c.metrics.seats, ' 座'), diff: false },
+    ],
+  },
+  {
+    name: '内饰与座舱',
+    rows: [
+      { label: '座椅布局', get: (c) => c.interior.seatLayout, diff: false },
+      { label: '前排座椅', get: (c) => c.interior.frontSeats, diff: false },
+      { label: '后排座椅', get: (c) => c.interior.rearSeats, diff: false },
+      { label: '屏幕与交互', get: (c) => c.interior.displays, diff: false },
+      { label: '音响系统', get: (c) => c.interior.audio, diff: false },
+      { label: '空调与舒适', get: (c) => c.interior.comfort, diff: false },
+      { label: '座舱系统', get: (c) => c.interior.cockpit, diff: false },
     ],
   },
   {
