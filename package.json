@@ -1,0 +1,32 @@
+{
+  "name": "xiaomi-auto-archive",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "data:check": "node tools/check-cars.mjs",
+    "data:export": "node tools/export-cars.mjs",
+    "data:fetch:su7": "node tools/fetch-autohome-spec.mjs 6962 > data-raw/autohome-6962-onsale.txt",
+    "astro": "astro",
+    "data:images:fetch": "node tools/fetch-autohome-official-images.mjs",
+    "data:images": "node tools/build-car-images.mjs",
+    "data:series:images": "node tools/build-series-images.mjs",
+    "data:interiors": "node tools/build-interior-images.mjs"
+  },
+  "dependencies": {
+    "@astrojs/vue": "^7.0.2",
+    "astro": "^7.3.2",
+    "vue": "^3.5.42"
+  },
+  "allowScripts": {
+    "esbuild": true
+  },
+  "devDependencies": {
+    "sharp": "^0.35.4"
+  }
+}

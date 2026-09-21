@@ -1,0 +1,211 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CarImage from '../components/CarImage.vue';
+import { cars, SERIES_META, compareReleaseDesc } from '../data/cars';
+import { listLocalCarImages } from '../data/car-image-map';
+import { SERIES_BROWSER, matchesSeriesBrowserItem } from '../data/series-browser';
+
+const imageMap = listLocalCarImages();
+
+const total = cars.length;
+const seriesCount = SERIES_BROWSER.length;
+const priceMin = Math.min(...cars.map((c) => c.metrics.priceWan));
+
+const latest = [...cars].sort(compareReleaseDesc).slice(0, 4);
+
+/** 首页主推的三个车系（只展示车系，点击进入车系页） */
+const featuredSeries = ['n90', 'n70', 'su7-2026']
+  .map((slug) => SERIES_BROWSER.find((item) => item.slug === slug))
+  .filter((item) => item !== undefined);
+
+
+const seriesEntries = SERIES_BROWSER;
+---
+
+<BaseLayout title="小米汽车档案馆">
+  <section class="hero">
+    <div class="hero-aurora" aria-hidden="true">
+      <span class="orb orb-a"></span>
+      <span class="orb orb-b"></span>
+      <span class="orb orb-c"></span>
+    </div>
+    <div class="container hero-inner">
+      <div class="hero-copy">
+        <p class="eyebrow reveal">XIAOMI AUTO ARCHIVE · 2024—2026</p>
+        <h1 class="hero-title gradient-text reveal reveal-delay-1">
+          <span class="title-line">小米汽车</span>
+          <span class="title-line">车型档案</span>
+        </h1>
+        <p class="hero-desc reveal reveal-delay-2">
+          收录 <strong class="hl-num">{total}</strong> 款在售与历史车型版本，
+          续航、三电、车身与智驾配置逐项对照，同一版本两代之间的差异一眼看清。
+        </p>
+        <div class="hero-stats reveal reveal-delay-3">
+          <div class="stat">
+            <div class="stat-num mono">{total}</div>
+            <div class="stat-label">车型版本</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num mono">{seriesCount}</div>
+            <div class="stat-label">车系</div>
+          </div>
+        </div>
+        <div class="hero-actions reveal reveal-delay-4">
+          <a class="btn primary" href="/cars">浏览车型库</a>
+          <a class="btn ghost" href="/compare">车型对比</a>
+        </div>
+        <p class="hero-motto reveal reveal-delay-5">永远相信美好的事情即将发生</p>
+      </div>
+
+      <div class="hero-showcase reveal reveal-delay-3">
+        {featuredSeries.map((item) => (
+          <a class="showcase-card" href={`/series/${item.slug}`}>
+            <div class="showcase-thumb">
+              <img src={item.image} alt={item.imageAlt} loading="eager" decoding="async" />
+            </div>
+            <div class="showcase-meta">
+              <strong>{item.label}</strong>
+              <span class="muted">{item.desc}</span>
+              <span class="mono muted">查看车系 →</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="container section">
+    <h2 class="section-title">按车系浏览</h2>
+    <div class="series-grid reveal-on-scroll">
+      {seriesEntries.map((item) => {
+        const list = cars.filter((car) => matchesSeriesBrowserItem(car, item));
+        if (!list.length) return null;
+        return (
+          <a class="card series-card lift" href={`/series/${item.slug}`} style={`--series-color:${item.color}`}>
+            <div class="series-thumb">
+              <img src={item.image} alt={item.imageAlt} loading="lazy" decoding="async" />
+            </div>
+            <div class="series-top">
+              <span class="dot" style={`background:${item.color}`}></span>
+              <h3>{item.label}</h3>
+            </div>
+            <p class="muted">{item.desc}</p>
+            <div class="series-foot">
+              <span class="mono">{list.length} 款</span>
+              <span class="mono price">￥{Math.min(...list.map((c) => c.metrics.priceWan))} 万起</span>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  </section>
+
+  <section class="container section">
+    <h2 class="section-title">最新车型</h2>
+    <div class="latest-grid reveal-on-scroll">
+      {latest.map((car) => (
+        <a class="card latest-card lift" href={`/cars/${car.slug}`}>
+          <CarImage slug={car.slug} name={car.name} visual={car.visual} imageMap={imageMap} size="sm" />
+          <div class="latest-body">
+            <span class="eyebrow" style={`color:${SERIES_META[car.series]?.color ?? 'var(--orange)'}`}>
+              {car.series}
+            </span>
+            <strong>{car.name}</strong>
+            <span class="mono muted">{car.release} · <span class="price">{car.metrics.priceWan} 万</span></span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="container section">
+    <h2 class="section-title">这个档案馆能做什么</h2>
+    <div class="feature-grid reveal-on-scroll">
+      <div class="card feature-card">
+        <h3>查一款车的完整档案</h3>
+        <p class="muted">
+          进入任意车型，查看指导价、续航、电池、动力、尺寸、智驾和内饰配置。
+        </p>
+      </div>
+      <div class="card feature-card">
+        <h3>把多款车放在一起比</h3>
+        <p class="muted">
+          最多选 4 款车型，按基本参数、三电、车身、内饰和底盘并排对照。
+        </p>
+      </div>
+      <div class="card feature-card">
+        <h3>顺着车系和时间逛</h3>
+        <p class="muted">
+          按车系查看版本梯度，或沿 2024—2026 时间轴追踪产品更新。
+        </p>
+      </div>
+      <div class="card feature-card">
+        <h3>用统一口径看数据</h3>
+        <p class="muted">
+          续航统一为 CLTC、价格采用厂商指导价；无法核实的数据不硬填，避免误导。
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero { position: relative; padding: var(--sp-8) 0 var(--sp-7); overflow: hidden; }
+  .hero-inner { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: var(--sp-7); align-items: center; }
+  .hero-title { margin: 12px 0 var(--sp-4); font-size: var(--fs-3xl); line-height: 1.04; font-weight: 800; letter-spacing: -0.03em; }
+  .hero-title.gradient-text { animation: fade-up 0.7s var(--ease-out) 0.08s forwards, gradient-shift 6s ease-in-out 0.8s infinite; }
+  .title-line { display: block; }
+  .hero-desc { margin: 0 0 var(--sp-5); font-size: var(--fs-md); max-width: 34em; line-height: 1.7; }
+  .hero-stats { display: flex; gap: var(--sp-6); margin-bottom: var(--sp-5); flex-wrap: wrap; }
+  .stat-num { font-size: var(--fs-xl); font-weight: 700; color: var(--hl-num); }
+  .stat-label { font-size: var(--fs-xs); color: var(--paper-mute); }
+  .hero-actions { display: flex; gap: var(--sp-3); }
+  .hero-motto { margin: var(--sp-5) 0 0; padding-left: 12px; border-left: 2px solid var(--price); color: var(--price); font-size: var(--fs-md); font-weight: 600; letter-spacing: 0.05em; }
+  .hero-showcase { display: grid; gap: var(--sp-4); }
+  .showcase-card {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    align-items: center;
+    gap: var(--sp-4);
+    padding: var(--sp-4);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--line-strong);
+    background: linear-gradient(135deg, var(--hero-grad-a), var(--hero-grad-b));
+  }
+  .showcase-thumb { width: 150px; aspect-ratio: 16 / 10; overflow: hidden; border-radius: var(--radius); background: var(--ink-3); }
+  .showcase-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .showcase-meta { display: flex; flex-direction: column; gap: 4px; font-size: var(--fs-sm); }
+  .section { padding: var(--sp-7) 0 0; }
+  .section-title { margin: 0 0 var(--sp-4); font-size: var(--fs-lg); }
+  .section-desc { margin: -8px 0 var(--sp-4); font-size: var(--fs-sm); }
+  .series-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--sp-4); }
+  .series-card { padding: var(--sp-5); display: flex; flex-direction: column; gap: var(--sp-3); overflow: hidden; }
+  .series-thumb { margin: calc(-1 * var(--sp-5)) calc(-1 * var(--sp-5)) 0; aspect-ratio: 16 / 10; overflow: hidden; background: var(--ink-3); }
+  .series-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .series-top { display: flex; align-items: center; gap: 10px; }
+  .series-top h3 { margin: 0; font-size: var(--fs-md); }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .series-card p { margin: 0; font-size: var(--fs-sm); line-height: 1.6; }
+  .series-foot { display: flex; justify-content: space-between; font-size: var(--fs-sm); margin-top: auto; }
+  .latest-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--sp-4); }
+  .latest-card { padding: var(--sp-4); display: flex; flex-direction: column; gap: var(--sp-3); }
+  .latest-body { display: flex; flex-direction: column; gap: 4px; font-size: var(--fs-sm); }
+  .pair-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--sp-4); }
+  .pair-card { padding: var(--sp-5); }
+  .pair-title { margin: 0 0 var(--sp-3); font-size: var(--fs-md); }
+  .pair-table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+  .pair-table th { text-align: left; color: var(--paper-mute); font-weight: 400; padding: 8px 0; width: 40%; }
+  .pair-table td { padding: 8px 0; }
+  .pair-links { display: flex; gap: 8px; margin-top: var(--sp-3); font-size: var(--fs-xs); }
+  .pair-links a { color: var(--orange); }
+  .feature-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--sp-4); }
+  .feature-card { padding: var(--sp-5); }
+  .feature-card h3 { margin: 0 0 var(--sp-3); font-size: var(--fs-md); }
+  .feature-card p { margin: 0; font-size: var(--fs-sm); line-height: 1.7; }
+  @media (max-width: 900px) {
+    .hero-inner { grid-template-columns: 1fr; }
+    .hero-title { font-size: var(--fs-2xl); }
+    .showcase-card { grid-template-columns: 110px 1fr; }
+    .showcase-thumb { width: 110px; }
+  }
+</style>

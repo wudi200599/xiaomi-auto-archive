@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SeriesSection from '../../components/SeriesSection.astro';
+import { SERIES_BROWSER, type SeriesBrowserItem } from '../../data/series-browser';
+
+export function getStaticPaths() {
+  return SERIES_BROWSER.map((item) => ({
+    params: { slug: item.slug },
+    props: { item },
+  }));
+}
+
+interface Props {
+  item: SeriesBrowserItem;
+}
+
+const { item } = Astro.props;
+---
+
+<BaseLayout title={`${item.label} · 车系`} description={item.desc}>
+  <div class="page container">
+    <nav class="crumb" aria-label="面包屑">
+      <a href="/series">车系总览</a>
+      <span aria-hidden="true">/</span>
+      <span>{item.label}</span>
+    </nav>
+    <header class="page-head">
+      <p class="eyebrow">SERIES</p>
+      <h1 class="page-title">{item.label}</h1>
+      <p class="page-desc muted">{item.desc}</p>
+    </header>
+    <SeriesSection item={item} showHeading={false} />
+  </div>
+</BaseLayout>
+
+<style>
+  .page { padding: var(--sp-5) 0 var(--sp-8); }
+  .crumb { display: flex; gap: 8px; margin-bottom: var(--sp-5); font-size: var(--fs-sm); color: var(--paper-mute); }
+  .crumb a:hover { color: var(--orange); }
+  .page-head { margin-bottom: var(--sp-5); }
+  .page-title { margin: 8px 0; font-size: var(--fs-xl); font-weight: 700; }
+  .page-desc { margin: 0; }
+</style>

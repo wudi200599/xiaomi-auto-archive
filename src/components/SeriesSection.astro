@@ -1,0 +1,68 @@
+---
+import CarImage from './CarImage.vue';
+import { cars } from '../data/cars';
+import { listLocalCarImages } from '../data/car-image-map';
+import { matchesSeriesBrowserItem, type SeriesBrowserItem } from '../data/series-browser';
+
+interface Props {
+  item: SeriesBrowserItem;
+  showHeading?: boolean;
+}
+
+const { item, showHeading = true } = Astro.props;
+const imageMap = listLocalCarImages();
+const list = cars
+  .filter((car) => matchesSeriesBrowserItem(car, item))
+  .sort((a, b) => a.metrics.priceWan - b.metrics.priceWan || a.release.localeCompare(b.release));
+const titleId = `series-title-${item.slug}`;
+---
+
+<section class="series-block" id={item.slug} aria-labelledby={showHeading ? titleId : undefined} data-series={item.slug}>
+  <div class="series-banner">
+    <img src={item.image} alt={item.imageAlt} loading="lazy" decoding="async" />
+  </div>
+  {showHeading && (
+    <div class="series-head">
+      <div>
+        <h2 class="series-name" id={titleId} style={`color:${item.color}`}>{item.label}</h2>
+        <p class="series-desc muted">{item.desc}</p>
+      </div>
+      <span class="mono muted">{list.length ? `${list.length} 款` : '整理中'}</span>
+    </div>
+  )}
+
+  <p class="series-slogan">{item.slogan}</p>
+
+  {list.length === 0 ? (
+    <p class="empty muted">该车系资料整理中，敬请期待。</p>
+  ) : (
+    <div class="gen-grid">
+      {list.map((car) => (
+        <a class="card series-card lift" href={`/cars/${car.slug}`}>
+          <CarImage slug={car.slug} name={car.name} visual={car.visual} imageMap={imageMap} size="sm" />
+          <div class="series-body">
+            <strong>{car.name}</strong>
+            <span class="mono muted">{car.release}</span>
+            <span class="mono price">{car.metrics.priceWan} 万起</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  )}
+</section>
+
+<style>
+  .series-block { margin-bottom: var(--sp-7); scroll-margin-top: 80px; }
+  .series-banner { aspect-ratio: 16 / 6; max-height: 340px; overflow: hidden; border-radius: var(--radius-lg); border: 1px solid var(--line); background: var(--ink-3); margin-bottom: var(--sp-4); }
+  .series-banner img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+  [data-series='n70'] .series-banner img,
+  [data-series='n90'] .series-banner img { object-position: center 94%; }
+  .series-head { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--sp-4); margin-bottom: var(--sp-4); }
+  .series-name { margin: 0 0 6px; font-size: var(--fs-lg); }
+  .series-desc { margin: 0; font-size: var(--fs-sm); max-width: 46em; }
+  .series-slogan { margin: 0 0 var(--sp-4); padding-left: 14px; border-left: 2px solid var(--price); color: var(--price); font-size: var(--fs-md); font-weight: 600; letter-spacing: 0.06em; line-height: 1.5; }
+  .gen-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--sp-4); }
+  .series-card { padding: var(--sp-4); display: flex; flex-direction: column; gap: var(--sp-3); }
+  .series-body { display: flex; flex-direction: column; gap: 4px; font-size: var(--fs-sm); }
+  .empty { margin: 0 0 var(--sp-4); font-size: var(--fs-sm); }
+</style>

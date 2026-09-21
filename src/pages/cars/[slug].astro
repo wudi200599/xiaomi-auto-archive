@@ -1,0 +1,281 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CarImage from '../../components/CarImage.vue';
+import { cars, SERIES_META, compareReleaseDesc } from '../../data/cars';
+import { getSeriesSlug } from '../../data/series-browser';
+import { listLocalCarImages } from '../../data/car-image-map';
+
+const imageMap = listLocalCarImages();
+
+export function getStaticPaths() {
+  return cars.map((car) => ({ params: { slug: car.slug }, props: { car } }));
+}
+
+const { car } = Astro.props;
+const meta = SERIES_META[car.series];
+const isN90Studio = car.slug === 'n90-2026-max-explorer';
+const fmt = (v: number | null, unit = '') => (v === null || v === undefined ? '—' : `${v}${unit}`);
+
+const sameSeries = cars
+  .filter((c) => c.series === car.series && c.slug !== car.slug)
+  .sort(compareReleaseDesc);
+
+const groups = [
+  {
+    name: '基本信息',
+    rows: [
+      ['车系', car.series],
+      ['上市时间', car.release],
+      ['厂商指导价', `${car.metrics.priceWan} 万元`],
+      ['级别', car.specs.level],
+    ],
+  },
+  {
+    name: '三电系统',
+    rows: [
+      [car.powertrain === '增程' ? '纯电续航（CLTC）' : 'CLTC 续航', fmt(car.metrics.rangeKm, ' km')],
+      ...(car.metrics.rangeTotalKm ? [['综合续航（CLTC）', fmt(car.metrics.rangeTotalKm, ' km')]] : []),
+      ...(car.specs.engine ? [['增程器', car.specs.engine]] : []),
+      ['电池容量', fmt(car.metrics.batteryKwh, ' kWh')],
+      ['电池品牌 / 类型', car.specs.batteryType || '—'],
+      ['平台电压（峰值）', fmt(car.metrics.voltageV, ' V')],
+      ['电机总功率', fmt(car.metrics.powerKw, ' kW')],
+      ['电机总扭矩', fmt(car.metrics.torqueNm, ' N·m')],
+      ['驱动形式', car.specs.motorLayout],
+      ['官方 0-100km/h', fmt(car.metrics.zeroTo100, ' s')],
+      ['最高车速', fmt(car.metrics.topSpeedKmh, ' km/h')],
+      [`快充 ${car.metrics.fastChargeRange}%`, fmt(car.metrics.fastChargeMin, ' 分钟')],
+      ['百公里耗电', fmt(car.metrics.consumptionKwh100, ' kWh/100km')],
+      ...(car.metrics.fuelConsumptionL100 ? [['馈电油耗（WLTC）', fmt(car.metrics.fuelConsumptionL100, ' L/100km')]] : []),
+      ...(car.metrics.fuelTankL ? [['油箱容积', fmt(car.metrics.fuelTankL, ' L')]] : []),
+    ],
+  },
+  {
+    name: '车身',
+    rows: [
+      ['长 / 宽 / 高', `${fmt(car.metrics.lengthMm)} / ${fmt(car.metrics.widthMm)} / ${fmt(car.metrics.heightMm)} mm`],
+      ['轴距', fmt(car.metrics.wheelbaseMm, ' mm')],
+      ['整备质量', fmt(car.metrics.curbWeightKg, ' kg')],
+      ['座位数', fmt(car.metrics.seats, ' 座')],
+    ],
+  },
+  {
+    name: '内饰与座舱',
+    rows: [
+      ['座椅布局', car.interior.seatLayout],
+      ['前排座椅', car.interior.frontSeats],
+      ['后排座椅', car.interior.rearSeats],
+      ['屏幕与交互', car.interior.displays],
+      ['音响系统', car.interior.audio],
+      ['空调与舒适', car.interior.comfort],
+      ['座舱系统', car.interior.cockpit],
+    ],
+  },
+  {
+    name: '智能与底盘',
+    rows: [
+      ['辅助驾驶硬件', car.specs.adas || '—'],
+      ['平台 / 底盘', car.specs.platform || '—'],
+      ['悬架', car.specs.suspension || '—'],
+      ['制动', car.specs.brakes || '—'],
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title={car.name}
+  description={`${car.name}（${car.model}）：CLTC ${car.metrics.rangeKm}km，${car.metrics.zeroTo100}s 破百，指导价 ${car.metrics.priceWan} 万元起。`}
+>
+  <div class="page container">
+    <nav class="crumb muted" aria-label="面包屑">
+      <a href="/cars">车型库</a>
+      <span>/</span>
+      <a href={`/series/${getSeriesSlug(car)}`}>{car.series}</a>
+      <span>/</span>
+      <span>{car.name}</span>
+    </nav>
+
+    <div class="hero card">
+      <div class="hero-visual">
+        <CarImage client:visible slug={car.slug} name={car.name} visual={car.visual} imageMap={imageMap} size="lg" />
+      </div>
+      <div class="hero-copy">
+        <p class="eyebrow" style={`color:${meta?.color ?? 'var(--orange)'}`}>
+          {car.series}
+        </p>
+        <h1 class="title">{car.name}</h1>
+        <p class="model mono muted">{car.model}</p>
+        <p class="tagline">
+          {car.powertrain === '增程'
+            ? `纯电 ${car.metrics.rangeKm}km / 综合 ${car.metrics.rangeTotalKm}km · ${car.metrics.zeroTo100}s 破百 · ${car.metrics.batteryKwh}kWh 电池 + ${car.metrics.fuelTankL}L 油箱`
+            : `CLTC ${car.metrics.rangeKm}km · ${car.metrics.zeroTo100}s 破百 · ${car.metrics.batteryKwh}kWh 电池`}
+        </p>
+
+        <div class="meta-grid">
+          <div>
+            <div class="meta-label">厂商指导价</div>
+            <div class="meta-value mono price">{car.metrics.priceWan} 万元</div>
+          </div>
+          <div>
+            <div class="meta-label">上市时间</div>
+            <div class="meta-value mono">{car.release}</div>
+          </div>
+          <div>
+            <div class="meta-label">车型类型</div>
+            <div class="meta-value">{car.specs.level || '—'}</div>
+          </div>
+          <div>
+            <div class="meta-label">动力形式</div>
+            <div class="meta-value">{car.powertrain}</div>
+          </div>
+        </div>
+
+        <div class="highlights">
+          {car.highlights.map((h) => <span class="hl">{h}</span>)}
+        </div>
+
+        <div class="hero-actions">
+          <a class="btn primary" href={`/compare?cars=${car.slug}`}>加入对比</a>
+          <a class="btn ghost" href="/cars">浏览全部车型</a>
+        </div>
+      </div>
+    </div>
+
+    {car.records && car.records.length > 0 && (
+      <section class="card section records">
+        <h2 class="section-title">赛道记录</h2>
+        <div class="record-list">
+          {car.records.map((r) => (
+            <div class="record-item">
+              <div class="record-time mono">{r.lapTime}</div>
+              <div class="record-body">
+                <div class="record-title">
+                  {r.title ? <span class="record-badge">{r.title}</span> : null}
+                  <span class="record-track">{r.track}</span>
+                </div>
+                <div class="record-meta mono muted">
+                  {r.vehicle} · {r.date}
+                </div>
+                {r.note ? <div class="record-note muted">{r.note}</div> : null}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="card section interior-gallery">
+      <div class="section-head">
+        <h2 class="section-title">内饰实拍</h2>
+        <span class="mono muted">{isN90Studio ? '空间模式' : '前排 / 后排'}</span>
+      </div>
+      <div class="interior-grid">
+        <a class="interior-card" href={`/images/interiors/${car.slug}.webp`} target="_blank" rel="noopener">
+          <img src={`/images/interiors/${car.slug}.webp`} alt={`${car.name} 前排座舱内饰`} loading="lazy" decoding="async" />
+          <div class="interior-caption">
+            <strong>{isN90Studio ? '单边成床' : '前排座舱'}</strong>
+            <span class="muted">{isN90Studio ? '一侧座椅与平整床铺' : '驾驶与中控视角'}</span>
+          </div>
+        </a>
+        <a class="interior-card" href={`/images/interiors/${car.slug}-rear.webp`} target="_blank" rel="noopener">
+          <img src={`/images/interiors/${car.slug}-rear.webp`} alt={`${car.name} 后排与后向座舱内饰`} loading="lazy" decoding="async" />
+          <div class="interior-caption">
+            <strong>{isN90Studio ? '大床模式' : '后排 / 后向视角'}</strong>
+            <span class="muted">{isN90Studio ? '升顶舱一键成床' : '乘坐空间与座舱后部'}</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <div class="content-grid">
+      {groups.map((group) => (
+        <section class="card section">
+          <h2 class="section-title">{group.name}</h2>
+          <dl class="spec-list">
+            {group.rows.map(([k, v]) => (
+              <div class="spec-item">
+                <dt>{k}</dt>
+                <dd>{v}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      ))}
+    </div>
+
+    {sameSeries.length > 0 && (
+      <section class="card section">
+        <h2 class="section-title">同车系其它版本</h2>
+        <div class="related">
+          {sameSeries.map((other) => (
+            <a class="rel-card lift" href={`/cars/${other.slug}`}>
+              <CarImage slug={other.slug} name={other.name} visual={other.visual} imageMap={imageMap} size="sm" />
+              <div class="rel-body">
+                <strong>{other.name}</strong>
+                <span class="mono muted">{other.metrics.priceWan} 万 · {other.metrics.rangeKm}km</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+  </div>
+</BaseLayout>
+
+<style>
+  .page { padding: var(--sp-6) 0 var(--sp-8); }
+  .crumb { display: flex; gap: 8px; font-size: var(--fs-sm); margin-bottom: var(--sp-4); }
+  .crumb a:hover { color: var(--orange); }
+  .hero { display: grid; grid-template-columns: minmax(280px, 1fr) 1.2fr; gap: var(--sp-6); padding: var(--sp-6); align-items: center; }
+  .hero-visual { display: flex; justify-content: center; }
+  .title { margin: 6px 0; font-size: var(--fs-xl); letter-spacing: -0.02em; }
+  .model { margin: 0 0 var(--sp-3); font-size: var(--fs-sm); }
+  .tagline { margin: 0 0 var(--sp-4); font-size: var(--fs-md); }
+  .meta-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-3) var(--sp-5); margin-bottom: var(--sp-4); }
+  .meta-label { font-size: var(--fs-xs); color: var(--paper-mute); }
+  .meta-value { font-size: var(--fs-sm); margin-top: 2px; }
+  .price { color: var(--price); font-weight: 600; }
+  .highlights { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: var(--sp-4); }
+  .hl { font-size: var(--fs-xs); padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line-strong); color: var(--paper-dim); }
+  .hero-actions { display: flex; gap: var(--sp-3); }
+  .section { padding: var(--sp-5); margin-top: var(--sp-4); }
+  .section-title { margin: 0 0 var(--sp-4); font-size: var(--fs-md); font-weight: 700; color: var(--gold); letter-spacing: 0.01em; }
+  .section-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--sp-3); }
+  .section-head .section-title { margin-bottom: var(--sp-4); }
+  .interior-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-4); }
+  .interior-card { display: block; overflow: hidden; border-radius: var(--radius); border: 1px solid var(--line-strong); background: var(--ink-3); }
+  .interior-card img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; transition: transform var(--dur) var(--ease-out); }
+  .interior-card:hover img { transform: scale(1.015); }
+  .interior-caption { display: flex; justify-content: space-between; gap: var(--sp-3); padding: 11px 13px; font-size: var(--fs-sm); }
+  .interior-caption span { font-size: var(--fs-xs); }
+  .content-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: var(--sp-4); }
+  .spec-list { margin: 0; }
+  .spec-item { display: grid; grid-template-columns: 140px 1fr; gap: var(--sp-3); padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .spec-item:last-child { border-bottom: none; }
+  .spec-item dt { font-size: var(--fs-sm); color: var(--paper-mute); }
+  .spec-item dd { margin: 0; font-size: var(--fs-sm); }
+  .gen-compare { display: flex; gap: var(--sp-3); flex-wrap: wrap; }
+  .gen-card { flex: 1 1 260px; display: flex; flex-direction: column; gap: 6px; padding: var(--sp-4); border-radius: var(--radius); border: 1px solid var(--line-strong); background: var(--ink-3); }
+  .gen-label { font-size: var(--fs-xs); color: var(--orange); }
+  .record-list { display: flex; flex-direction: column; gap: var(--sp-3); }
+  .record-item { display: grid; grid-template-columns: 160px 1fr; gap: var(--sp-4); align-items: center; padding: var(--sp-4); border-radius: var(--radius); border: 1px solid var(--line-strong); background: var(--ink-3); }
+  .record-time { font-size: var(--fs-lg); font-weight: 700; color: var(--gold); }
+  .record-body { display: flex; flex-direction: column; gap: 4px; }
+  .record-title { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: var(--fs-sm); }
+  .record-badge { padding: 3px 10px; border-radius: 999px; background: rgba(194, 168, 120, 0.16); color: var(--gold); font-size: var(--fs-xs); }
+  .record-track { color: var(--paper-dim); }
+  .record-meta { font-size: var(--fs-xs); }
+  .record-note { font-size: var(--fs-xs); }
+  .related { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--sp-4); }
+  .rel-card { display: flex; flex-direction: column; gap: 10px; padding: var(--sp-4); border-radius: var(--radius); border: 1px solid var(--line-strong); background: var(--ink-3); }
+  .rel-body { display: flex; flex-direction: column; gap: 4px; font-size: var(--fs-sm); }
+  @media (max-width: 640px) {
+    .record-item { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; padding: var(--sp-4); }
+    .interior-grid { grid-template-columns: 1fr; }
+    .spec-item { grid-template-columns: 110px 1fr; }
+  }
+</style>

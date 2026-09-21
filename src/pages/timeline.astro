@@ -1,0 +1,75 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CarImage from '../components/CarImage.vue';
+import { cars, SERIES_META, compareReleaseDesc } from '../data/cars';
+import { listLocalCarImages } from '../data/car-image-map';
+
+const imageMap = listLocalCarImages();
+
+const sorted = [...cars].sort(compareReleaseDesc);
+const byYear = new Map<number, typeof cars>();
+for (const car of sorted) {
+  const year = Number(car.release.slice(0, 4));
+  const list = byYear.get(year) ?? [];
+  list.push(car);
+  byYear.set(year, list);
+}
+const years = [...byYear.keys()].sort((a, b) => b - a);
+---
+
+<BaseLayout title="时间轴" description="按上市年份梳理小米汽车车型与版本，从初代 SU7 到新一代 SU7。">
+  <div class="page container">
+    <header class="page-head">
+      <p class="eyebrow">TIMELINE</p>
+      <h1 class="page-title">时间轴</h1>
+      <p class="page-desc muted">按上市年份回溯小米汽车的车型与版本演进。</p>
+    </header>
+
+    {years.map((year) => (
+      <section class="year-block">
+        <div class="year-head">
+          <h2 class="year">{year}</h2>
+          <span class="mono muted">{byYear.get(year)!.length} 款</span>
+        </div>
+        <div class="year-grid">
+          {byYear.get(year)!.map((car) => (
+            <a class="card tl-card lift" href={`/cars/${car.slug}`}>
+              <div class="tl-media">
+                <CarImage slug={car.slug} name={car.name} visual={car.visual} imageMap={imageMap} size="sm" />
+              </div>
+              <div class="tl-body">
+                <h3 class="tl-name">{car.name}</h3>
+                <p class="tl-meta">
+                  <span style={`color:${SERIES_META[car.series]?.color ?? 'var(--orange)'}`}>{car.series}</span>
+                  <span class="mono muted">{car.release}</span>
+                </p>
+                <p class="tl-tags mono muted">
+                  {car.metrics.rangeKm}km · {car.metrics.zeroTo100}s · <span class="price">{car.metrics.priceWan}万</span>
+                </p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    ))}
+  </div>
+</BaseLayout>
+
+<style>
+  .page { padding: var(--sp-6) 0 var(--sp-8); }
+  .page-head { margin-bottom: var(--sp-5); }
+  .page-title { margin: 8px 0; font-size: var(--fs-xl); font-weight: 700; }
+  .page-desc { margin: 0; }
+  .year-block { margin-bottom: var(--sp-6); }
+  .year-head { display: flex; align-items: baseline; gap: var(--sp-3); margin-bottom: var(--sp-3); }
+  .year { margin: 0; font-size: var(--fs-lg); color: var(--orange); letter-spacing: 0.02em; }
+  .year-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--sp-4); }
+  .tl-card { display: grid; grid-template-columns: 132px 1fr; gap: var(--sp-3); padding: var(--sp-4); align-items: center; }
+  .tl-media { display: flex; align-items: center; justify-content: center; }
+  .tl-name { margin: 0 0 6px; font-size: var(--fs-sm); font-weight: 700; }
+  .tl-meta { display: flex; gap: 10px; margin: 0 0 4px; font-size: var(--fs-xs); }
+  .tl-tags { margin: 0; font-size: var(--fs-xs); }
+  @media (max-width: 640px) {
+    .year-grid { grid-template-columns: 1fr; }
+  }
+</style>

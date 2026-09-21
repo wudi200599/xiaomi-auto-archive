@@ -1,0 +1,56 @@
+[
+  {
+    "slug": "su7",
+    "source": "car:su7-2024-standard",
+    "url": null,
+    "note": "初代 SU7 标准版",
+    "width": 1600,
+    "height": 1000,
+    "kb": 34
+  },
+  {
+    "slug": "su7-ultra",
+    "source": "car:su7-ultra-2025-track",
+    "url": null,
+    "note": "SU7 Ultra 经典黄色",
+    "width": 1600,
+    "height": 1000,
+    "kb": 192
+  },
+  {
+    "slug": "su7-new",
+    "source": "car:su7-2026-standard",
+    "url": null,
+    "note": "新一代 SU7 标准版",
+    "width": 1600,
+    "height": 1000,
+    "kb": 48
+  },
+  {
+    "slug": "yu7",
+    "source": "car:yu7-2026-standard",
+    "url": null,
+    "note": "YU7 标准版",
+    "width": 1600,
+    "height": 1000,
+    "kb": 50
+  },
+  {
+    "slug": "n70",
+    "source": "official-xiaomiev",
+    "url": "https://s1.xiaomiev.com/activity-outer-assets/0328/images/n70_20260907/pc/n70.jpg",
+    "note": "澎程 N70 普通版官方渲染图",
+    "width": 1600,
+    "height": 1000,
+    "kb": 63
+  },
+  {
+    "slug": "n90",
+    "source": "official-xiaomiev",
+    "url": "https://s1.xiaomiev.com/activity-outer-assets/0328/images/n70_20260907/pc/n90.png",
+    "note": "澎程 N90 普通版官方渲染图",
+    "width": 1600,
+    "height": 1000,
+    "kb": 44
+  }
+]

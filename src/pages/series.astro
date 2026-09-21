@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SeriesSection from '../components/SeriesSection.astro';
+import { SERIES_BROWSER } from '../data/series-browser';
+---
+
+<BaseLayout title="车系总览" description="按车系梳理小米汽车产品线。">
+  <div class="page container">
+    <header class="page-head">
+      <p class="eyebrow">SERIES</p>
+      <h1 class="page-title">车系总览</h1>
+      <p class="page-desc muted">按车系梳理车型，方便追踪每一条产品线的演进。</p>
+    </header>
+
+    {SERIES_BROWSER.map((item) => (
+      <SeriesSection item={item} />
+    ))}
+  </div>
+</BaseLayout>
+
+<style>
+  .page { padding: var(--sp-6) 0 var(--sp-8); }
+  .page-head { margin-bottom: var(--sp-5); }
+  .page-title { margin: 8px 0; font-size: var(--fs-xl); font-weight: 700; }
+  .page-desc { margin: 0; }
+</style>

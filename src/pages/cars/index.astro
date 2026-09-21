@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CarExplorer from '../../components/CarExplorer.vue';
+import { cars } from '../../data/cars';
+import { listLocalCarImages } from '../../data/car-image-map';
+
+const imageMap = listLocalCarImages();
+---
+
+<BaseLayout title="车型库" description="浏览小米汽车全部车型与版本，支持车系筛选与参数排序，并可加入对比。">
+  <div class="page container">
+    <header class="page-head">
+      <p class="eyebrow">CATALOG</p>
+      <h1 class="page-title">车型库</h1>
+      <p class="page-desc muted">
+        按车系或关键词筛选；点击「加入对比」可并排比较最多 4 款车型。
+      </p>
+    </header>
+
+    <CarExplorer client:load cars={cars} imageMap={imageMap} />
+  </div>
+</BaseLayout>
+
+<style>
+  .page { padding: var(--sp-6) 0 var(--sp-8); }
+  .page-head { margin-bottom: var(--sp-5); }
+  .page-title { margin: 8px 0; font-size: var(--fs-xl); font-weight: 700; letter-spacing: -0.02em; }
+  .page-desc { margin: 0; max-width: 44em; }
+</style>

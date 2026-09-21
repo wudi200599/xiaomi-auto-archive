@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CarCompare from '../components/CarCompare.vue';
+import { cars } from '../data/cars';
+import { listLocalCarImages } from '../data/car-image-map';
+
+const imageMap = listLocalCarImages();
+---
+
+<BaseLayout title="车型对比" description="选择最多 4 款小米汽车车型，逐项对比价格、三电、车身与智能底盘配置。">
+  <div class="page container">
+    <CarCompare client:load cars={cars} imageMap={imageMap} />
+  </div>
+</BaseLayout>
+
+<style>
+  .page { padding: var(--sp-6) 0 var(--sp-8); }
+</style>
