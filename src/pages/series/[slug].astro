@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SeriesSection from '../../components/SeriesSection.astro';
 import { SERIES_BROWSER, type SeriesBrowserItem } from '../../data/series-browser';
+import { withBase } from '../../utils/url';
 
 export function getStaticPaths() {
   return SERIES_BROWSER.map((item) => ({
@@ -20,7 +21,7 @@ const { item } = Astro.props;
 <BaseLayout title={`${item.label} · 车系`} description={item.desc}>
   <div class="page container">
     <nav class="crumb" aria-label="面包屑">
-      <a href="/series">车系总览</a>
+      <a href={withBase('/series')}>车系总览</a>
       <span aria-hidden="true">/</span>
       <span>{item.label}</span>
     </nav>

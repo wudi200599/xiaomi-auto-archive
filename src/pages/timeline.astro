@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import CarImage from '../components/CarImage.vue';
 import { cars, SERIES_META, compareReleaseDesc } from '../data/cars';
 import { listLocalCarImages } from '../data/car-image-map';
+import { withBase } from '../utils/url';
 
 const imageMap = listLocalCarImages();
 
@@ -33,7 +34,7 @@ const years = [...byYear.keys()].sort((a, b) => b - a);
         </div>
         <div class="year-grid">
           {byYear.get(year)!.map((car) => (
-            <a class="card tl-card lift" href={`/cars/${car.slug}`}>
+            <a class="card tl-card lift" href={withBase(`/cars/${car.slug}`)}>
               <div class="tl-media">
                 <CarImage slug={car.slug} name={car.name} visual={car.visual} imageMap={imageMap} size="sm" />
               </div>

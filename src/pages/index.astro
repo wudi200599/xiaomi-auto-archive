@@ -4,6 +4,7 @@ import CarImage from '../components/CarImage.vue';
 import { cars, SERIES_META, compareReleaseDesc } from '../data/cars';
 import { listLocalCarImages } from '../data/car-image-map';
 import { SERIES_BROWSER, matchesSeriesBrowserItem } from '../data/series-browser';
+import { withBase } from '../utils/url';
 
 const imageMap = listLocalCarImages();
 
@@ -51,17 +52,17 @@ const seriesEntries = SERIES_BROWSER;
           </div>
         </div>
         <div class="hero-actions reveal reveal-delay-4">
-          <a class="btn primary" href="/cars">浏览车型库</a>
-          <a class="btn ghost" href="/compare">车型对比</a>
+          <a class="btn primary" href={withBase('/cars')}>浏览车型库</a>
+          <a class="btn ghost" href={withBase('/compare')}>车型对比</a>
         </div>
         <p class="hero-motto reveal reveal-delay-5">永远相信美好的事情即将发生</p>
       </div>
 
       <div class="hero-showcase reveal reveal-delay-3">
         {featuredSeries.map((item) => (
-          <a class="showcase-card" href={`/series/${item.slug}`}>
+          <a class="showcase-card" href={withBase(`/series/${item.slug}`)}>
             <div class="showcase-thumb">
-              <img src={item.image} alt={item.imageAlt} loading="eager" decoding="async" />
+              <img src={withBase(item.image)} alt={item.imageAlt} loading="eager" decoding="async" />
             </div>
             <div class="showcase-meta">
               <strong>{item.label}</strong>
@@ -81,9 +82,9 @@ const seriesEntries = SERIES_BROWSER;
         const list = cars.filter((car) => matchesSeriesBrowserItem(car, item));
         if (!list.length) return null;
         return (
-          <a class="card series-card lift" href={`/series/${item.slug}`} style={`--series-color:${item.color}`}>
+          <a class="card series-card lift" href={withBase(`/series/${item.slug}`)} style={`--series-color:${item.color}`}>
             <div class="series-thumb">
-              <img src={item.image} alt={item.imageAlt} loading="lazy" decoding="async" />
+              <img src={withBase(item.image)} alt={item.imageAlt} loading="lazy" decoding="async" />
             </div>
             <div class="series-top">
               <span class="dot" style={`background:${item.color}`}></span>
@@ -104,7 +105,7 @@ const seriesEntries = SERIES_BROWSER;
     <h2 class="section-title">最新车型</h2>
     <div class="latest-grid reveal-on-scroll">
       {latest.map((car) => (
-        <a class="card latest-card lift" href={`/cars/${car.slug}`}>
+        <a class="card latest-card lift" href={withBase(`/cars/${car.slug}`)}>
           <CarImage slug={car.slug} name={car.name} visual={car.visual} imageMap={imageMap} size="sm" />
           <div class="latest-body">
             <span class="eyebrow" style={`color:${SERIES_META[car.series]?.color ?? 'var(--orange)'}`}>

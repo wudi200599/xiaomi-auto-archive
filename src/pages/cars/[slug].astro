@@ -4,6 +4,7 @@ import CarImage from '../../components/CarImage.vue';
 import { cars, SERIES_META, compareReleaseDesc } from '../../data/cars';
 import { getSeriesSlug } from '../../data/series-browser';
 import { listLocalCarImages } from '../../data/car-image-map';
+import { withBase } from '../../utils/url';
 
 const imageMap = listLocalCarImages();
 
@@ -89,9 +90,9 @@ const groups = [
 >
   <div class="page container">
     <nav class="crumb muted" aria-label="面包屑">
-      <a href="/cars">车型库</a>
+      <a href={withBase('/cars')}>车型库</a>
       <span>/</span>
-      <a href={`/series/${getSeriesSlug(car)}`}>{car.series}</a>
+      <a href={withBase(`/series/${getSeriesSlug(car)}`)}>{car.series}</a>
       <span>/</span>
       <span>{car.name}</span>
     </nav>
@@ -136,8 +137,8 @@ const groups = [
         </div>
 
         <div class="hero-actions">
-          <a class="btn primary" href={`/compare?cars=${car.slug}`}>加入对比</a>
-          <a class="btn ghost" href="/cars">浏览全部车型</a>
+          <a class="btn primary" href={withBase(`/compare?cars=${car.slug}`)}>加入对比</a>
+          <a class="btn ghost" href={withBase('/cars')}>浏览全部车型</a>
         </div>
       </div>
     </div>
@@ -171,15 +172,15 @@ const groups = [
         <span class="mono muted">{isN90Studio ? '空间模式' : '前排 / 后排'}</span>
       </div>
       <div class="interior-grid">
-        <a class="interior-card" href={`/images/interiors/${car.slug}.webp`} target="_blank" rel="noopener">
-          <img src={`/images/interiors/${car.slug}.webp`} alt={`${car.name} 前排座舱内饰`} loading="lazy" decoding="async" />
+        <a class="interior-card" href={withBase(`/images/interiors/${car.slug}.webp`)} target="_blank" rel="noopener">
+          <img src={withBase(`/images/interiors/${car.slug}.webp`)} alt={`${car.name} 前排座舱内饰`} loading="lazy" decoding="async" />
           <div class="interior-caption">
             <strong>{isN90Studio ? '单边成床' : '前排座舱'}</strong>
             <span class="muted">{isN90Studio ? '一侧座椅与平整床铺' : '驾驶与中控视角'}</span>
           </div>
         </a>
-        <a class="interior-card" href={`/images/interiors/${car.slug}-rear.webp`} target="_blank" rel="noopener">
-          <img src={`/images/interiors/${car.slug}-rear.webp`} alt={`${car.name} 后排与后向座舱内饰`} loading="lazy" decoding="async" />
+        <a class="interior-card" href={withBase(`/images/interiors/${car.slug}-rear.webp`)} target="_blank" rel="noopener">
+          <img src={withBase(`/images/interiors/${car.slug}-rear.webp`)} alt={`${car.name} 后排与后向座舱内饰`} loading="lazy" decoding="async" />
           <div class="interior-caption">
             <strong>{isN90Studio ? '大床模式' : '后排 / 后向视角'}</strong>
             <span class="muted">{isN90Studio ? '升顶舱一键成床' : '乘坐空间与座舱后部'}</span>
@@ -209,7 +210,7 @@ const groups = [
         <h2 class="section-title">同车系其它版本</h2>
         <div class="related">
           {sameSeries.map((other) => (
-            <a class="rel-card lift" href={`/cars/${other.slug}`}>
+            <a class="rel-card lift" href={withBase(`/cars/${other.slug}`)}>
               <CarImage slug={other.slug} name={other.name} visual={other.visual} imageMap={imageMap} size="sm" />
               <div class="rel-body">
                 <strong>{other.name}</strong>

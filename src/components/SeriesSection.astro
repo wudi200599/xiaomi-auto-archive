@@ -3,6 +3,7 @@ import CarImage from './CarImage.vue';
 import { cars } from '../data/cars';
 import { listLocalCarImages } from '../data/car-image-map';
 import { matchesSeriesBrowserItem, type SeriesBrowserItem } from '../data/series-browser';
+import { withBase } from '../utils/url';
 
 interface Props {
   item: SeriesBrowserItem;
@@ -19,7 +20,7 @@ const titleId = `series-title-${item.slug}`;
 
 <section class="series-block" id={item.slug} aria-labelledby={showHeading ? titleId : undefined} data-series={item.slug}>
   <div class="series-banner">
-    <img src={item.image} alt={item.imageAlt} loading="lazy" decoding="async" />
+    <img src={withBase(item.image)} alt={item.imageAlt} loading="lazy" decoding="async" />
   </div>
   {showHeading && (
     <div class="series-head">
@@ -38,7 +39,7 @@ const titleId = `series-title-${item.slug}`;
   ) : (
     <div class="gen-grid">
       {list.map((car) => (
-        <a class="card series-card lift" href={`/cars/${car.slug}`}>
+        <a class="card series-card lift" href={withBase(`/cars/${car.slug}`)}>
           <CarImage slug={car.slug} name={car.name} visual={car.visual} imageMap={imageMap} size="sm" />
           <div class="series-body">
             <strong>{car.name}</strong>

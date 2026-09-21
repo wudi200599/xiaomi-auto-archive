@@ -30,7 +30,7 @@
 
       <div class="status">
         <span class="count mono">{{ filtered.length }} / {{ cars.length }} 款</span>
-        <a class="btn primary sm" :href="compareHref">对比已选（{{ compareList.length }}）</a>
+        <a class="btn primary sm" :href="withBase(compareHref)">对比已选（{{ compareList.length }}）</a>
       </div>
     </div>
 
@@ -63,7 +63,7 @@
             >
               {{ inCompare(car.slug) ? '已加入' : '加入对比' }}
             </button>
-            <a class="btn ghost sm" :href="`/cars/${car.slug}`">详情</a>
+            <a class="btn ghost sm" :href="withBase(`/cars/${car.slug}`)">详情</a>
           </div>
         </div>
       </article>
@@ -74,6 +74,7 @@
 </template>
 
 <script setup>
+import { withBase } from '../utils/url';
 import { computed, onMounted, ref, watch } from 'vue';
 import CarImage from './CarImage.vue';
 

@@ -14,6 +14,7 @@
 </template>
 
 <script setup>
+import { withBase } from '../utils/url';
 import { computed, ref, watch } from 'vue';
 import CarVisual from './CarVisual.vue';
 
@@ -32,7 +33,7 @@ const src = computed(() => {
   if (failed.value) return null;
   const ext = props.imageMap?.[props.slug];
   if (!ext) return null;
-  return `/images/cars/${props.slug}.${ext}`;
+  return withBase(`/images/cars/${props.slug}.${ext}`);
 });
 
 const visualSize = computed(() => props.size);

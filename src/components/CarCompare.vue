@@ -44,7 +44,7 @@
                 <CarImage :slug="car.slug" :name="car.name" :visual="car.visual" :image-map="imageMap" size="sm" />
                 <div class="th-name">{{ car.name }}</div>
                 <div class="th-model mono muted">{{ car.model }}</div>
-                <a class="th-link" :href="`/cars/${car.slug}`">详情 →</a>
+                <a class="th-link" :href="withBase(`/cars/${car.slug}`)">详情 →</a>
                 <button class="rm" type="button" @click="toggle(car.slug)">移除</button>
               </div>
             </th>
@@ -71,6 +71,7 @@
 </template>
 
 <script setup>
+import { withBase } from '../utils/url';
 import { computed, onMounted, ref, watch } from 'vue';
 import CarImage from './CarImage.vue';
 
